@@ -1,9 +1,9 @@
-name: Test Build
+name: Release Build
 
 on:
   push:
     branches:
-      - develop
+      - main
   workflow_dispatch:
 
 jobs:
@@ -18,16 +18,23 @@ jobs:
         with:
           distribution: corretto
           java-version: 17
-        
+
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+      - name: Create Release Sign
+        run: |
+          echo ${{secrets.JKS_FILE}} | base64 -d  > app/TVBoxOSC.jks
       - name: Build With Gradle
         run: |
           chmod +x gradlew
           export SENTRY_AUTH_TOKEN=${{secrets.SENTRY_AUTH_TOKEN}}
           export SENTRY_PROJECT=tvbox
-          echo using $SENTRY_AUTH_TOKEN
-          ./gradlew assembleDebug --build-cache --parallel --daemon --warning-mode all
+          ./gradlew assembleDebug --build-cache --parallel --daemon --warning-mode all \
+          -Pandroid.injected.signing.store.file=TVBoxOSC.jks \
+          -Pandroid.injected.signing.store.password=${{secrets.JKS_PASSWORD}} \
+          -Pandroid.injected.signing.key.alias=mykey \
+          -Pandroid.injected.signing.key.password=${{secrets.JKS_PASSWORD}}
+
       - name: generate sentry config
         run: |
           echo "defaults.project=tvbox" > sentry.properties
