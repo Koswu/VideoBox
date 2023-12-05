@@ -76,48 +76,57 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
 
     @Throws(Exception::class)
     override fun homeContent(filter: Boolean): String {
+        LOG.i("get homeContent from $api ")
         return call("home", filter) as String
     }
 
     @Throws(Exception::class)
     override fun homeVideoContent(): String {
+        LOG.i("get homeVideoContent from $api ")
         return call("homeVod") as String
     }
 
     @Throws(Exception::class)
     override fun categoryContent(tid: String, pg: String, filter: Boolean, extend: HashMap<String, String>): String {
+        LOG.i("get categoryContent from $api ")
         val obj = submit<JSObject> { JSUtils<String>().toObj(ctx, extend) }.get()
         return call("category", tid, pg, filter, obj) as String
     }
 
     @Throws(Exception::class)
     override fun detailContent(ids: List<String>): String {
+        LOG.i("get detailContent from $api ")
         return call("detail", ids[0]) as String
     }
 
     @Throws(Exception::class)
     override fun searchContent(key: String, quick: Boolean): String {
+        LOG.i("get searchContent from $api ")
         return call("search", key, quick) as String
     }
 
     @Throws(Exception::class)
     override fun searchContent(key: String, quick: Boolean, pg: String): String {
+        LOG.i("get searchContent from $api ")
         return call("search", key, quick, pg) as String
     }
 
     @Throws(Exception::class)
     override fun playerContent(flag: String, id: String, vipFlags: List<String>): String {
+        LOG.i("get playerContent from $api ")
         val array = submit<JSArray> { JSUtils<String>().toArray(ctx, vipFlags) }.get()
         return call("play", flag, id, array) as String
     }
 
     @Throws(Exception::class)
     override fun manualVideoCheck(): Boolean {
+        LOG.i("get manualVideoCheck from $api ")
         return call("sniffer") as Boolean
     }
 
     @Throws(Exception::class)
     override fun isVideoFormat(url: String): Boolean {
+        LOG.i("get isVideoFormat from $api ")
         return call("isVideo", url) as Boolean
     }
 
@@ -145,14 +154,18 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
 
     @Throws(Exception::class)
     private fun initializeJS() {
+        LOG.i("initialize JS api $api")
         submit<Any?> {
             if (::ctx.isInitialized) createCtx()
             if (dex != null) createDex()
+            LOG.i("initialize JS api $api created ctx")
+
             var content = FileUtils.loadModule(api)
             if (TextUtils.isEmpty(content)) {
                 return@submit null
             }
             if (content.startsWith("//bb")) {
+                LOG.i("initialize JS api $api is base64")
                 cat = true
                 val b = Base64.decode(content.replace("//bb", ""), 0)
                 ctx.execute(byteFF(b), "$key.js")
@@ -165,6 +178,7 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
                 //ctx.execute(byteFF(b), key + ".js","__jsEvalReturn");
                 //ctx.evaluate("globalThis." + key + " = __JS_SPIDER__;");
             } else {
+                LOG.i("initialize JS api $api is js")
                 if (content.contains("__JS_SPIDER__")) {
                     content = content.replace("__JS_SPIDER__\\s*=".toRegex(), "export default ")
                 }
@@ -182,6 +196,7 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
                 //ctx.evaluate("globalThis." + key + " = __JS_SPIDER__;");                
             }
             jsObject = ctx[ctx.getGlobalObject(), key] as JSObject
+            LOG.i("initialize JS api $api created jsObject")
             null
         }.get()
     }
