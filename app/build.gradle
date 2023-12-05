@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 def static buildTime() {
     return new Date().format("yyyyMMdd_HHmm", TimeZone.getTimeZone("GMT+08:00"))
@@ -55,13 +57,16 @@ android {
         dataBinding = true
     }
     namespace 'com.github.tvbox.osc'
+
+    kotlin {
+        compilerOptions {
+            apiVersion = KotlinVersion.KOTLIN_1_9
+            jvmTarget = JvmTarget.JVM_1_8
+        }
+    }
+
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = '1.8'
-    }
-}
 
 
 sentry {
