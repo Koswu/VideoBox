@@ -229,7 +229,7 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
                 return resolve(moduleBaseName, moduleName)
             }
         })
-        ctx.setConsole(QuickJSContext.Console { s -> LOG.i("QuJs", s) })
+        ctx.setConsole { s -> LOG.i("QuJs", s) }
         ctx.getGlobalObject().bind(Global(executor))
         val local = ctx.createJSObject()
         ctx.getGlobalObject()["local"] = local
@@ -243,8 +243,8 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
             val clz = dex
             val classes = clz!!.declaredClasses
             ctx.getGlobalObject()["jsapi"] = obj
-            if (classes.size == 0) invokeSingle(clz, obj)
-            if (classes.size >= 1) invokeMultiple(clz, obj)
+            if (classes.isEmpty()) invokeSingle(clz, obj)
+            else invokeMultiple(clz, obj)
         } catch (e: Throwable) {
             e.printStackTrace()
             LOG.e(e)
@@ -286,23 +286,6 @@ class JsSpider(key: String?, private val api: String, private val dex: Class<*>?
             }
         }
     }
-
-    private val content: String?
-        private get() {
-            val global = "globalThis.$key"
-            val content = FileUtils.loadModule(api)
-            if (TextUtils.isEmpty(content)) {
-                return null
-            }
-            return if (content.contains("__jsEvalReturn")) {
-                ctx.evaluate("req = http")
-                "$content$global = __jsEvalReturn()"
-            } else if (content.contains("__JS_SPIDER__")) {
-                content.replace("__JS_SPIDER__", global)
-            } else {
-                content.replace("export default.*?[{]".toRegex(), "$global = {")
-            }
-        }
 
     private fun proxy1(params: Map<String, String>): Array<Any?> {
         val `object` = JSUtils<String>().toObj(ctx, params)
