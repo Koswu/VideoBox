@@ -54,7 +54,15 @@ android {
     buildFeatures {
         dataBinding = true
     }
+    namespace 'com.github.tvbox.osc'
 }
+
+kotlin {
+    compilerOptions {
+        jvmTarget = '1.8'
+    }
+}
+
 
 sentry {
     // Disables or enables debug log output, e.g. for for sentry-cli.

@@ -10,6 +10,7 @@ android {
         minSdk 18
         targetSdk 31
     }
+    namespace 'com.whl.quickjs.android'
 }
 
 dependencies {
