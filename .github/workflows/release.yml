@@ -6,6 +6,14 @@ on:
       - develop
   workflow_dispatch:
 
+env:
+  MY_ENV_VARIABLE: ${{ secrets.MY_SECRET_ENV_VARIABLE }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_PROJECT: tvbox
+  SENTRY_ORG: koswu
+  JKS_FILE: ${{ secrets.JKS_FILE }}
+  JKS_PASSWORD: ${{ secrets.JKS_PASSWORD }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,12 +31,10 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Create Release Sign
         run: |
-          echo ${{secrets.JKS_FILE}} | base64 -d  > app/TVBoxOSC.jks
+          echo "$JKS_FILE" | base64 -d  > app/TVBoxOSC.jks
       - name: Build With Gradle
         run: |
           chmod +x gradlew
-          export SENTRY_AUTH_TOKEN=${{secrets.SENTRY_AUTH_TOKEN}}
-          export SENTRY_PROJECT=tvbox
           ./gradlew assembleDebug --build-cache --parallel --daemon --warning-mode all \
           -Pandroid.injected.signing.store.file=TVBoxOSC.jks \
           -Pandroid.injected.signing.store.password=${{secrets.JKS_PASSWORD}} \
@@ -37,8 +43,8 @@ jobs:
 
       - name: generate sentry config
         run: |
-          echo "defaults.project=tvbox" > sentry.properties
-          echo "defaults.org=koswu" >> sentry.properties
+          echo "defaults.project=$SENTRY_PROJECT" > sentry.properties
+          echo "defaults.org=$SENTRY_ORG" >> sentry.properties
           echo "auth.token=$SENTRY_AUTH_TOKEN" >> sentry.properties
       - name: Prepare App
         run: |

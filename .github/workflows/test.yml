@@ -6,6 +6,12 @@ on:
       - develop
   workflow_dispatch:
 
+env:
+  MY_ENV_VARIABLE: ${{ secrets.MY_SECRET_ENV_VARIABLE }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_PROJECT: tvbox
+  SENTRY_ORG: koswu
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,14 +30,11 @@ jobs:
       - name: Build With Gradle
         run: |
           chmod +x gradlew
-          export SENTRY_AUTH_TOKEN=${{secrets.SENTRY_AUTH_TOKEN}}
-          export SENTRY_PROJECT=tvbox
-          echo using $SENTRY_AUTH_TOKEN
           ./gradlew assembleDebug --build-cache --parallel --daemon --warning-mode all
       - name: generate sentry config
         run: |
-          echo "defaults.project=tvbox" > sentry.properties
-          echo "defaults.org=koswu" >> sentry.properties
+          echo "defaults.project=$SENTRY_PROJECT" > sentry.properties
+          echo "defaults.org=$SENTRY_ORG" >> sentry.properties
           echo "auth.token=$SENTRY_AUTH_TOKEN" >> sentry.properties
       - name: Prepare App
         run: |
