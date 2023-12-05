@@ -31,12 +31,12 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Create Release Sign
         run: |
-          echo "$JKS_FILE" | base64 -d  > TVBoxOSC.jks
+          echo "$JKS_FILE" | base64 -d  > app/TVBoxOSC.jks
       - name: Build With Gradle
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease --build-cache --parallel --daemon --warning-mode all \
-          -Pandroid.injected.signing.store.file=TVBoxOSC.jks \
+          -Pandroid.injected.signing.store.file=app/TVBoxOSC.jks \
           -Pandroid.injected.signing.store.password=${{secrets.JKS_PASSWORD}} \
           -Pandroid.injected.signing.key.alias=mykey \
           -Pandroid.injected.signing.key.password=${{secrets.JKS_PASSWORD}}
