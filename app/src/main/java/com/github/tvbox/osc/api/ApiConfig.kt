@@ -565,15 +565,15 @@ class ApiConfig private constructor() {
         } else jarLoader.getSpider(sourceBean.key, sourceBean.api, sourceBean.ext, sourceBean.jar)
     }
 
-    fun proxyLocal(param: Map<*, *>?): Array<Any> {
+    fun proxyLocal(param: Map<*, *>?): Array<Any>? {
         return jarLoader.proxyInvoke(param)
     }
 
-    fun jsonExt(key: String?, jxs: LinkedHashMap<String?, String?>?, url: String?): JSONObject {
+    fun jsonExt(key: String?, jxs: LinkedHashMap<String?, String?>?, url: String?): JSONObject? {
         return jarLoader.jsonExt(key, jxs, url)
     }
 
-    fun jsonExtMix(flag: String?, key: String?, name: String?, jxs: LinkedHashMap<String?, HashMap<String?, String?>?>?, url: String?): JSONObject {
+    fun jsonExtMix(flag: String?, key: String?, name: String?, jxs: LinkedHashMap<String?, HashMap<String?, String?>?>?, url: String?): JSONObject? {
         return jarLoader.jsonExtMix(flag, key, name, jxs, url)
     }
 
