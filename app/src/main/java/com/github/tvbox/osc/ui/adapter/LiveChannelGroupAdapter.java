@@ -28,8 +28,8 @@ public class LiveChannelGroupAdapter extends BaseQuickAdapter<LiveChannelGroup, 
     @Override
     protected void convert(BaseViewHolder holder, LiveChannelGroup item) {
         TextView tvGroupName = holder.getView(R.id.tvChannelGroupName);
-        tvGroupName.setText(item.getGroupName());
-        int groupIndex = item.getGroupIndex();
+        tvGroupName.setText(item.groupName);
+        int groupIndex = item.groupIndex;
         if (groupIndex == selectedGroupIndex && groupIndex != focusedGroupIndex) {
             // takagen99: Added Theme Color
 //            tvGroupName.setTextColor(mContext.getResources().getColor(R.color.color_theme));
